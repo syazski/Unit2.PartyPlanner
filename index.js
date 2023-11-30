@@ -16,6 +16,7 @@ const state = {
 
 const partyDetails = document.getElementById('party-deets');
 const formButton = document.querySelector('#addMoreParty');
+const deleteParty = document.querySelector('#deleteButton');
 
 //create function to render but wait for API data
 async function render () {
@@ -37,20 +38,24 @@ async function getParty() {
 };
 
 
-//display parties info from state, listParties();
+//display parties info from state, listParties(); add button;
 function listParties() {
     const partyInfo = state.parties.map((party) => {
         const list = document.createElement("li");
+        const button = document.createElement("button");
+        button.textContent = "Remove Party";
+        button.id = "deleteButton";
         list.innerHTML = `
         <h2>${party.name}</h2>
-        <p>Date & Time: ${party.date}</p>
-        <p>Location: ${party.location}</p>
-        <p>Description: ${party.description}</p>
+        <p><b>Date & Time:</b> ${party.date}</p>
+        <p><b>Location:</b> ${party.location}</p>
+        <p><b>Description:</b> ${party.description}</p>
         `;
+        list.append(button);
         return list;
     });
-
     partyDetails.replaceChildren(...partyInfo);
+
 };
 
 //create new party and POST to API from form
@@ -80,4 +85,27 @@ async function addParty(party) {
 };
 
 
-//create function to add delete button party from list
+//listen to deleteButton and create function to DELETE from API
+deleteParty.addEventListener("submit", removeParty);
+
+async function removeParty() {
+    try {
+        const goneParty = await fetch(API_URL, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: formButton.name.value,
+                date: formButton.date.value,
+                location: formButton.location.value,
+                description: formButton.description.value,
+              }),
+            });
+            if (!goneParty.ok) {
+                throw new Error("Failed to remove party");
+              }
+                   //re-render from state
+     render();
+    } catch (error) {
+        console.error(error);
+    };
+};
