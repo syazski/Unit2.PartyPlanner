@@ -15,14 +15,14 @@ const state = {
 };
 
 const partyDetails = document.getElementById('party-deets');
-const formButton = document.querySelector('#AddParty');
+const formButton = document.querySelector('#addMoreParty');
 
 //create function to render but wait for API data
 async function render () {
     await getParty();
     listParties();
 };
-
+render();
 
 //GET Parties from API getParty();
 async function getParty() {
@@ -33,7 +33,7 @@ async function getParty() {
     } catch {
         console.error(error);
     }
-    console.log(state.parties);
+    //console.log(state.parties);
 };
 
 
@@ -43,9 +43,9 @@ function listParties() {
         const list = document.createElement("li");
         list.innerHTML = `
         <h2>${party.name}</h2>
-        <p><b>Date & Time:</b> ${party.date}</p>
-        <p><b>Location:</b> ${party.location}</p>
-        <p><b>Description:</b> ${party.description}</p>
+        <p>Date & Time: ${party.date}</p>
+        <p>Location: ${party.location}</p>
+        <p>Description: ${party.description}</p>
         `;
         return list;
     });
@@ -53,11 +53,31 @@ function listParties() {
     partyDetails.replaceChildren(...partyInfo);
 };
 
-render();
+//create new party and POST to API from form
+formButton.addEventListener("submit", addParty);
 
-//formButton.addEventListener("submit", addPartyForm);
+async function addParty(party) {
+    party.preventDefault();
+    try {
+        const postParty = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: formButton.name.value,
+                date: formButton.date.value,
+                location: formButton.location.value,
+                description: formButton.description.value,
+              }),
+            });
+            if (!postParty.ok) {
+                throw new Error("Failed to create party");
+              }
+                   //re-render from state
+     render();
+    } catch (error) {
+        console.error(error);
+    };
+};
 
-
-//create new party from form
 
 //create function to add delete button party from list
