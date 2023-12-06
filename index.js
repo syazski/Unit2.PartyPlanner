@@ -14,6 +14,7 @@ const state = {
     parties: []
 };
 
+//select DOM
 const partyDetails = document.getElementById('party-deets');
 const formButton = document.querySelector('#addMoreParty');
 const deleteParty = document.querySelector('#deleteButton');
@@ -22,6 +23,7 @@ const deleteParty = document.querySelector('#deleteButton');
 async function render () {
     await getParty();
     listParties();
+    deleteFunction();
 };
 render();
 
@@ -42,16 +44,16 @@ async function getParty() {
 function listParties() {
     const partyInfo = state.parties.map((party) => {
         const list = document.createElement("li");
-        const button = document.createElement("button");
-        button.textContent = "Remove Party";
-        button.id = "deleteButton";
+        // const button = document.createElement("button");
+        // button.textContent = "Remove Party";
+        // button.id = "deleteButton";
         list.innerHTML = `
         <h2>${party.name}</h2>
         <p><b>Date & Time:</b> ${party.date}</p>
         <p><b>Location:</b> ${party.location}</p>
         <p><b>Description:</b> ${party.description}</p>
         `;
-        list.append(button);
+        // list.append(button);
         return list;
     });
     partyDetails.replaceChildren(...partyInfo);
@@ -84,6 +86,17 @@ async function addParty(party) {
     };
 };
 
+// create delete button
+function deleteFunction() {
+    const partyList = state.parties.map((party) => {
+        const list = document.createElement("li");
+        const button = document.createElement("button");
+        button.textContent = "Remove Party";
+        button.id = "deleteButton";
+        //list.append(button);
+})
+partyDetails.appendChild(...button);
+};
 
 //listen to deleteButton and create function to DELETE from API
 deleteParty.addEventListener("submit", removeParty);
@@ -94,10 +107,11 @@ async function removeParty() {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                name: formButton.name.value,
-                date: formButton.date.value,
-                location: formButton.location.value,
-                description: formButton.description.value,
+                id: deleteParty.id.value,
+                name: deleteParty.name.value,
+                date: deleteParty.date.value,
+                location: deleteParty.location.value,
+                description: deleteParty.description.value,
               }),
             });
             if (!goneParty.ok) {
